@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Installs and configures nginx to serve the required content on port 80.
+
+set -e
+
+apt-get -y update
+apt-get -y install nginx
+
+echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
+
+service nginx restart
