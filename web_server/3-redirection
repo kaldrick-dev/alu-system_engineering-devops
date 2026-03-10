@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Installs and configures nginx with a permanent redirect for /redirect_me.
 
-set -e
-
 apt-get -y update
 apt-get -y install nginx
 
