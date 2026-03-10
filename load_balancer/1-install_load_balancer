@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Installs and configures HAProxy to load-balance web-01 and web-02.
+
+set -e
+
+apt-get -y update
+apt-get -y install haproxy
+
+student_id="$(hostname | cut -d'-' -f1)"
+
+if [ -f /etc/default/haproxy ]; then
+    sed -i 's/^ENABLED=.*/ENABLED=1/' /etc/default/haproxy
+fi
+
+cat <<EOF_HAPROXY >/etc/haproxy/haproxy.cfg
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5000
+    timeout client 50000
+    timeout server 50000
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server web-01 ${student_id}-web-01:80 check
+    server web-02 ${student_id}-web-02:80 check
+EOF_HAPROXY
+
+systemctl enable haproxy
+service haproxy restart || service haproxy start
