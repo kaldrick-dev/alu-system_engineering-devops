@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Replace a line with mutliple lines with sed
+# Installs and configures nginx with a permanent redirect for /redirect_me.
 
 set -e
 
@@ -10,25 +10,22 @@ echo "Holberton School for the win!" > /var/www/html/index.html
 echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
 
 cat <<'EOF' > /etc/nginx/sites-available/default
-http {
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
 
-        location /redirect_me {
-            return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-        }
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
 
-        location / {
-            try_files $uri $uri/ =404;
-        }
+    location / {
+        try_files $uri $uri/ =404;
     }
 }
-
 EOF
 
 service nginx restart || service nginx start
