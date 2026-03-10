@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Installs and configures nginx with a custom response header.
+
+set -e
+
+apt-get -y update
+apt-get -y install nginx
+
+echo "Holberton School for the win!" > /var/www/html/index.html
+echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
+
+# shellcheck disable=SC2154
+cat <<'EOF_NGINX' > /etc/nginx/sites-available/default
+http {
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+
+        add_header X-Served-By $hostname;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}
+
+EOF_NGINX
+
+service nginx restart || service nginx start
